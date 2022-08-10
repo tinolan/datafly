@@ -2,7 +2,6 @@ package datafly;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +11,7 @@ import java.util.Scanner;
  *
  * @author Dunni
  */
-public class DGHTree 
+public class DGHTree
 {
     DGHNode root = new DGHNode();//which should always be set to {****}
     //ArrayList<DGHNode> children = new ArrayList<>();//add every possible child in the tree
@@ -109,7 +108,7 @@ public class DGHTree
     }
     
     /**
-     * Search a DGHTree to see the parent/generalized value of data
+     * Search a DGHTreeCustomized to see the parent/generalized value of data
      * @param data
      * @return 
      */
@@ -134,23 +133,6 @@ public class DGHTree
         for(int i = 0; i < roots.children.size(); i++){
             printTree(roots.children.get(i), j);
         }
-        //System.out.println();
-    }
-
-    public void safeTree(DGHNode roots, int j) throws FileNotFoundException{
-        //System.out.print(roots.data + " " + j + "," + " level - " +roots.level + " :");
-
-
-        PrintWriter writer = new PrintWriter(new FileOutputStream(new File("/Users/valentinlanger/IdeaProjects/dataFly/src/datafly/createdAgTree.txt"),true));
-
-        writer.println(roots.data + " " + j + "," + " level - " +roots.level + " :");
-        writer.close();
-        j++;
-        for(int i = 0; i < roots.children.size(); i++){
-            safeTree(roots.children.get(i), j);
-        }
-
-
         //System.out.println();
     }
     
@@ -355,7 +337,7 @@ public class DGHTree
         ArrayList<Integer> years = new ArrayList<>();
         ArrayList<String> yearRanges = new ArrayList<>();
         for(int i = 0; i < dates.size();i++){
-            String year = dates.get(i);
+            String year = dates.get(i).substring(0, 4);
             if(years.contains(Integer.parseInt(year)) == false){
                 years.add(Integer.parseInt(year));
             }
@@ -384,7 +366,7 @@ public class DGHTree
             //System.out.println("noOfRange " + i + " : "+ range);
             min = min + 10;
         }
-        //add ranges to DGHTree, we starting from the root
+        //add ranges to DGHTreeCustomized, we starting from the root
         DGHTree tree = new DGHTree(new DGHNode("****"));
         //System.out.println("Year Range size - " + yearRanges.size());
         for(int i = 0; i < yearRanges.size(); i++){
@@ -393,13 +375,14 @@ public class DGHTree
             node.setParent(tree.root);
             tree.root.children.add(node);
         }
+        //add individual years as children to year ranges
         for(int i = 0; i < tree.root.children.size(); i++){
             //System.out.println("Tree Root Children - " + tree.root.children.size());
             for(int j = 0; j < years.size(); j++){
                 String range2 = tree.root.children.get(i).getData();
                 //System.out.println("range - " + range2);
-                if(years.get(j) >= Integer.parseInt(range2.substring(0,2))){
-                    if(years.get(j) <= Integer.parseInt(range2.substring(3))){
+                if(years.get(j) >= Integer.parseInt(range2.substring(0,4))){
+                    if(years.get(j) <= Integer.parseInt(range2.substring(5))){
                         DGHNode node = new DGHNode(String.valueOf(years.get(j)));
                         node.setParent(new DGHNode(range2));
                         tree.root.children.get(i).children.add(node);
@@ -407,7 +390,6 @@ public class DGHTree
                 }
             }
         }
-
         //add year/mon as children to individual years - cancel duplication
         for(int i = 0; i < tree.root.children.size(); i++){
             for(int j = 0; j < tree.root.children.get(i).getChildCount(); j++){
@@ -440,70 +422,6 @@ public class DGHTree
         }
         
     return tree;    
-    }
-
-    public DGHTree createAgeDGHTrees(ArrayList<String> dates) throws FileNotFoundException{
-        ArrayList<Integer> years = new ArrayList<>();
-        ArrayList<String> yearRanges = new ArrayList<>();
-        for(int i = 0; i < dates.size();i++){
-            String year = dates.get(i);
-            if(years.contains(Integer.parseInt(year)) == false){
-                years.add(Integer.parseInt(year));
-            }
-        }
-        //find min and max
-        int min = years.get(0), max = years.get(0);
-        //int minValueColumn = 0, maxValueColumn = 0;
-        for(int i = 1; i < years.size(); i++){
-            if(years.get(i) > max){
-                max = years.get(i);
-                //maxValueColumn = i;
-            }
-            if(years.get(i)< min){
-                min = years.get(i);
-                //minValueColumn = i;
-            }
-        }
-        int noOfRanges = (max - min)/10;
-        if(((max - min)%10) != 0){
-            noOfRanges ++;
-        }
-
-        for(int i = 0; i < noOfRanges; i++){
-            String range = String.valueOf(min) + "-" + String.valueOf(min+9);
-            yearRanges.add(range);
-            //System.out.println("noOfRange " + i + " : "+ range);
-            min = min + 10;
-        }
-        //add ranges to DGHTree, we starting from the root
-        DGHTree tree = new DGHTree(new DGHNode("**"));
-        //System.out.println("Year Range size - " + yearRanges.size());
-        for(int i = 0; i < yearRanges.size(); i++){
-            DGHNode node = new DGHNode(yearRanges.get(i));
-            // System.out.println("noOfRange " + i + " : "+ node.getData());
-            node.setParent(tree.root);
-            tree.root.children.add(node);
-        }
-
-        //add individual years as children to year ranges
-        for(int i = 0; i < tree.root.children.size(); i++){
-            //System.out.println("Tree Root Children - " + tree.root.children.size());
-            for(int j = 0; j < years.size(); j++){
-                String range2 = tree.root.children.get(i).getData();
-                //System.out.println("range - " + range2);
-                if(years.get(j) >= Integer.parseInt(range2.substring(0,2))){
-                    if(years.get(j) <= Integer.parseInt(range2.substring(3))){
-                        DGHNode node = new DGHNode(String.valueOf(years.get(j)));
-                        node.setParent(new DGHNode(range2));
-                        tree.root.children.get(i).children.add(node);
-                    }
-                }
-            }
-        }
-
-        tree.safeTree(tree.root, 0);
-
-        return tree;
     }
     
     /**
@@ -550,35 +468,33 @@ public class DGHTree
     }
     
     public String modifyToDate(String string){
-        if(string.length() == 2){
-            return "**";
+        if(string.length() == 4){
+            return "****";
         }
-        return string.substring(0, string.length()-1);
+        return string.substring(0, string.length()-3);
     }
             
     /*
     For testing purposes
     */
     public static void main(String[] args) throws FileNotFoundException {
-        /*DGHTree tree = new DGHTree();
+        /*DGHTreeCustomized tree = new DGHTreeCustomized();
         tree.readIn("/Users/adenugad/NetBeansProjects/kAnonAlgorithms/src/datafly/dghtest.txt");
         tree.printTree(tree.root, 0);
         System.out.println();
-        System.out.println(tree.getGeneralization("cough"))/
+        System.out.println(tree.getGeneralization("cough"));*/
         DGHTree tree2 = new DGHTree();
         
         
         //new ArrayList<Integer>(Arrays.asList(1,2,3,5,8,13,21));
-        ArrayList<String> values = new ArrayList<>(Arrays.asList("10", "20", "30", "40", "50", "60", "70", "80", "90"));
-        tree2 = tree2.createAgeDGHTrees(values);
-        DGHTree tree3 = new DGHTree("/Users/valentinlanger/IdeaProjects/dataFly/src/datafly/dghSex");
-        DGHTree tree4 = new DGHTree("/Users/valentinlanger/IdeaProjects/dataFly/src/datafly/dghRace");
-
+        ArrayList<String> values = new ArrayList<>(Arrays.asList("2006-07-06", "1995-10-30", "1983-11-25", "1995-12-03","2000-07-16", "1986-11-25","1997-02-01", "2000-07-09", "2010-09-07","2011-05-05"));
+        tree2 = tree2.createRangesDatesDGHTrees(values);
+        DGHTree tree3 = new DGHTree("/Users/valentinlanger/IdeaProjects/dataFly/src/datafly/" + "dghSex");
+        DGHTree tree4 = new DGHTree("/Users/valentinlanger/IdeaProjects/dataFly/src/datafly/" + "dghRace");
+        
         tree2.setHeight();
         tree3.setHeight();
         tree4.setHeight();
-
-
         
         System.out.println("Tree Height2: " + tree2.getHeight());
         System.out.println("Tree Height3: " + tree3.getHeight());

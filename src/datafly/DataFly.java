@@ -101,7 +101,7 @@ public class DataFly {
         along with the number of occurrences of each sequence.*/
         HashMap<Integer,Integer> columnsGeneralized = new HashMap<>();
         HashMap<ArrayList, Integer> freqSet = getFreqSet(myPrivateTable);
-        ArrayList<DGHTreeOrg> dghTrees = createDGHTrees(myPrivateTable);
+        ArrayList<DGHTree> dghTrees = createDGHTrees(myPrivateTable);
         int generalizationLevel = 0;
         while(seqOccursLessThanKTimes(freqSet, kAnon)){
            
@@ -260,15 +260,15 @@ public class DataFly {
     /**
      * Use DGH to generalize a table
      * @param oldTable
-     * @param dghTreeOrg
+     * @param dghTree
      * @param columnToGeneralize
      * @return
      * @throws FileNotFoundException 
      */
-    public PrivateTable generateTableWithDGHTable(PrivateTable oldTable, DGHTreeOrg dghTreeOrg, int columnToGeneralize) throws FileNotFoundException{
+    public PrivateTable generateTableWithDGHTable(PrivateTable oldTable, DGHTree dghTree, int columnToGeneralize) throws FileNotFoundException{
         PrivateTable newTable = oldTable.copy();
         for(int i = 0; i < oldTable.tableRows.size();i++){
-                String newElement = dghTreeOrg.getGeneralization(newTable.tableRows.get(i).data.get(columnToGeneralize));
+                String newElement = dghTree.getGeneralization(newTable.tableRows.get(i).data.get(columnToGeneralize));
                 newTable.tableRows.get(i).data.set(columnToGeneralize, newElement);
         }
         return newTable;   
@@ -284,12 +284,12 @@ public class DataFly {
      * @param table - need to read actual values of DOB and ID from the table
      * @return 
      */
-    public ArrayList<DGHTreeOrg> createDGHTrees(PrivateTable table) throws FileNotFoundException{
-        ArrayList<DGHTreeOrg> dghTrees = new ArrayList<>();
+    public ArrayList<DGHTree> createDGHTrees(PrivateTable table) throws FileNotFoundException{
+        ArrayList<DGHTree> dghTrees = new ArrayList<>();
         String header = "/Users/valentinlanger/IdeaProjects/dataFly/src/datafly/";
         
         //create DGH for Race
-        DGHTreeOrg dghTreeRace = new DGHTreeOrg(header + "dghRace");
+        DGHTree dghTreeRace = new DGHTree(header + "dghRace");
         dghTreeRace.setWeight(0);
         dghTreeRace.setLabel("Race");
         dghTreeRace.setHeight();
@@ -301,7 +301,7 @@ public class DataFly {
         for(int i = 0; i < table.tableRows.size(); i++){
             dates.add(table.tableRows.get(i).data.get(1));
         }
-        DGHTreeOrg dghTreeDOB = new DGHTreeOrg();
+        DGHTree dghTreeDOB = new DGHTree();
         dghTreeDOB = dghTreeDOB.createRangesDatesDGHTrees(dates);
         dghTreeDOB.setWeight(1);
         dghTreeDOB.setLabel("DOB");
@@ -314,7 +314,7 @@ public class DataFly {
         for(int i = 0; i < table.tableRows.size(); i++){
             ids.add(table.tableRows.get(i).data.get(2));
         }
-        DGHTreeOrg dghTreeID = new DGHTreeOrg();
+        DGHTree dghTreeID = new DGHTree();
         dghTreeID = dghTreeID.createDGHTree(ids);
         dghTreeID.setLabel("ID");
         dghTreeID.setWeight(0.5);
@@ -323,7 +323,7 @@ public class DataFly {
         dghTrees.add(dghTreeID);
         
         //create DGH for Sex
-        DGHTreeOrg dghTreeSex = new DGHTreeOrg(header + "dghSex");
+        DGHTree dghTreeSex = new DGHTree(header + "dghSex");
         dghTreeSex.setWeight(0);
         dghTreeSex.setLabel("Sex");
         dghTreeSex.setHeight();

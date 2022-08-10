@@ -104,7 +104,7 @@ public class DataFlyCustomized {
         along with the number of occurrences of each sequence.*/
         HashMap<Integer,Integer> columnsGeneralized = new HashMap<>();
         HashMap<ArrayList, Integer> freqSet = getFreqSet(myPrivateTable);
-        ArrayList<DGHTree> dghTrees = createDGHTrees(myPrivateTable);
+        ArrayList<DGHTreeCustomized> dghTrees = createDGHTrees(myPrivateTable);
         int generalizationLevel = 0;
         while(seqOccursLessThanKTimes(freqSet, kAnon)){
 
@@ -274,15 +274,15 @@ public class DataFlyCustomized {
     /**
      * Use DGH to generalize a table
      * @param oldTable
-     * @param dghTree
+     * @param dghTreeCustomized
      * @param columnToGeneralize
      * @return
      * @throws FileNotFoundException
      */
-    public PrivateTable generateTableWithDGHTable(PrivateTable oldTable, DGHTree dghTree, int columnToGeneralize) throws FileNotFoundException{
+    public PrivateTable generateTableWithDGHTable(PrivateTable oldTable, DGHTreeCustomized dghTreeCustomized, int columnToGeneralize) throws FileNotFoundException{
         PrivateTable newTable = oldTable.copy();
         for(int i = 0; i < oldTable.tableRows.size();i++){
-            String newElement = dghTree.getGeneralization(newTable.tableRows.get(i).data.get(columnToGeneralize));
+            String newElement = dghTreeCustomized.getGeneralization(newTable.tableRows.get(i).data.get(columnToGeneralize));
             newTable.tableRows.get(i).data.set(columnToGeneralize, newElement);
         }
         return newTable;
@@ -298,8 +298,8 @@ public class DataFlyCustomized {
      * @param table - need to read actual values of DOB and ID from the table
      * @return
      */
-    public ArrayList<DGHTree> createDGHTrees(PrivateTable table) throws FileNotFoundException{
-        ArrayList<DGHTree> dghTrees = new ArrayList<>();
+    public ArrayList<DGHTreeCustomized> createDGHTrees(PrivateTable table) throws FileNotFoundException{
+        ArrayList<DGHTreeCustomized> dghTrees = new ArrayList<>();
         String header = "/Users/valentinlanger/IdeaProjects/dataFly/src/datafly/";
 
         //create DGH for DOB
@@ -307,22 +307,22 @@ public class DataFlyCustomized {
         for(int i = 0; i < table.tableRows.size(); i++){
             dates.add(table.tableRows.get(i).data.get(0));
         }
-        DGHTree dghTreeDOB = new DGHTree();
-        dghTreeDOB = dghTreeDOB.createAgeDGHTrees(dates);
-        dghTreeDOB.setWeight(1);
-        dghTreeDOB.setLabel("DOB");
-        dghTreeDOB.setHeight();
+        DGHTreeCustomized dghTreeCustomizedDOB = new DGHTreeCustomized();
+        dghTreeCustomizedDOB = dghTreeCustomizedDOB.createAgeDGHTrees(dates);
+        dghTreeCustomizedDOB.setWeight(1);
+        dghTreeCustomizedDOB.setLabel("DOB");
+        dghTreeCustomizedDOB.setHeight();
 
-        dghTreeDOB.setDGHNodeLevels(dghTreeDOB.root, dghTreeDOB.getHeight()-1);
-        dghTrees.add(dghTreeDOB);
+        dghTreeCustomizedDOB.setDGHNodeLevels(dghTreeCustomizedDOB.root, dghTreeCustomizedDOB.getHeight()-1);
+        dghTrees.add(dghTreeCustomizedDOB);
 
         //create DGH for Workclass
-        DGHTree dghTreeRace = new DGHTree(header + "dghWorkclass");
-        dghTreeRace.setWeight(0);
-        dghTreeRace.setLabel("Workclass");
-        dghTreeRace.setHeight();
-        dghTreeRace.setDGHNodeLevels(dghTreeRace.root, dghTreeRace.getHeight()-1);
-        dghTrees.add(dghTreeRace);
+        DGHTreeCustomized dghTreeCustomizedRace = new DGHTreeCustomized(header + "dghWorkclass");
+        dghTreeCustomizedRace.setWeight(0);
+        dghTreeCustomizedRace.setLabel("Workclass");
+        dghTreeCustomizedRace.setHeight();
+        dghTreeCustomizedRace.setDGHNodeLevels(dghTreeCustomizedRace.root, dghTreeCustomizedRace.getHeight()-1);
+        dghTrees.add(dghTreeCustomizedRace);
 
 
         //create DGH for ID
@@ -330,28 +330,28 @@ public class DataFlyCustomized {
         for(int i = 0; i < table.tableRows.size(); i++){
             ids.add(table.tableRows.get(i).data.get(2));
         }
-        DGHTree dghTreeID = new DGHTree();
-        dghTreeID = dghTreeID.createDGHTree(ids);
-        dghTreeID.setLabel("ID");
-        dghTreeID.setWeight(0.5);
-        dghTreeID.setHeight();
-        dghTreeID.setDGHNodeLevels(dghTreeID.root, dghTreeID.getHeight()-1);
-        dghTrees.add(dghTreeID);
+        DGHTreeCustomized dghTreeCustomizedID = new DGHTreeCustomized();
+        dghTreeCustomizedID = dghTreeCustomizedID.createDGHTree(ids);
+        dghTreeCustomizedID.setLabel("ID");
+        dghTreeCustomizedID.setWeight(0.5);
+        dghTreeCustomizedID.setHeight();
+        dghTreeCustomizedID.setDGHNodeLevels(dghTreeCustomizedID.root, dghTreeCustomizedID.getHeight()-1);
+        dghTrees.add(dghTreeCustomizedID);
 
         //create DGH for Education
-        DGHTree dghTreeEducation = new DGHTree(header + "dghEducation");
-        dghTreeEducation.setWeight(0);
-        dghTreeEducation.setLabel("Education");
-        dghTreeEducation.setHeight();
-        dghTreeEducation.setDGHNodeLevels(dghTreeEducation.root, dghTreeEducation.getHeight()-1);
-        dghTrees.add(dghTreeEducation);
+        DGHTreeCustomized dghTreeCustomizedEducation = new DGHTreeCustomized(header + "dghEducation");
+        dghTreeCustomizedEducation.setWeight(0);
+        dghTreeCustomizedEducation.setLabel("Education");
+        dghTreeCustomizedEducation.setHeight();
+        dghTreeCustomizedEducation.setDGHNodeLevels(dghTreeCustomizedEducation.root, dghTreeCustomizedEducation.getHeight()-1);
+        dghTrees.add(dghTreeCustomizedEducation);
         /*
         //create DGH for Years of Education
         ArrayList<String> education_years = new ArrayList<>();
         for(int i = 0; i < table.tableRows.size(); i++){
             education_years.add(table.tableRows.get(i).data.get(4));
         }
-        DGHTree dghTreeEduYears = new DGHTree();
+        DGHTreeCustomized dghTreeEduYears = new DGHTreeCustomized();
         dghTreeEduYears = dghTreeEduYears.createAgeDGHTrees(education_years);
         dghTreeEduYears.setWeight(1);
         dghTreeEduYears.setLabel("Years of Education");
@@ -360,7 +360,7 @@ public class DataFlyCustomized {
         dghTrees.add(dghTreeEduYears);
 
         //create DGH for Sex
-        DGHTree dghTreeSex = new DGHTree(header + "dghSex");
+        DGHTreeCustomized dghTreeSex = new DGHTreeCustomized(header + "dghSex");
         dghTreeSex.setWeight(0);
         dghTreeSex.setLabel("Sex");
         dghTreeSex.setHeight();
